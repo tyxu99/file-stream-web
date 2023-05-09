@@ -15,7 +15,7 @@ export default function Home() {
   const [wkArr, setWkArr] = useState<any>([]);
   useEffect(() => {
     const t = [];
-    for (let i = 0; i < navigator.hardwareConcurrency; i++) {
+    for (let i = 0; i < navigator.hardwareConcurrency * 4; i++) {
       const wk = new Worker("/worker.js");
       t.push(wk);
     }
@@ -33,8 +33,16 @@ export default function Home() {
     //   console.log("beforeupload", md5(e.data));
     // };
     wkArr[count % wkArr.length].postMessage({ file });
-    wkArr[count % wkArr.length].onmessage = ({ data }) => {
-      console.log("md5", md5(data) + "--" + ++current);
+    wkArr[count % wkArr.length].onmessage = ({ data: { blob, name } }) => {
+      // console.log("blob", blob);
+      console.log(name, ">>>>>", blob);
+      // crypto.subtle.digest("SHA-256", blob).then((res) => {
+      //   // const enc = new TextDecoder("utf-8");
+      //
+      //   const arr = new Uint8Array(res);
+      //
+      //   console.log(name, "sha256>>>>>>", arr.join(""));
+      // });
     };
   };
   const fileChangeHandler = (file: any) => {

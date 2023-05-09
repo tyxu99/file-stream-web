@@ -4,9 +4,9 @@
 
 self.onmessage = (e) => {
   const fr = new FileReader();
-  fr.readAsDataURL(e.data.file);
+  fr.readAsArrayBuffer(e.data.file);
   fr.onload = () => {
-    self.postMessage(fr.result);
+    self.postMessage({ blob: fr.result, name: e.data.file.name });
   };
 
   // self.postMessage({ tag: generateFileId(e.data.file) });
