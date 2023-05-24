@@ -1,45 +1,28 @@
 import { Button, Upload, Progress } from "antd";
 import { useState } from "react";
+import { getFileId, sliceFileToLocalStorage } from "@/utils/helper";
+import fetcher from "@/utils/fetcher";
 
 const Index = () => {
   const [percent, setPercent] = useState(0);
   const [acObj, setAcObj] = useState<any>(null);
 
-  const isFileExist = async (file: File) => {
-    const fr = new FileReader();
-    fr.readAsArrayBuffer(file);
-    fr.onload = () => {
-      crypto.subtle
-        .digest("SHA-256", fr.result as BufferSource)
-        .then(async (res) => {
-          const hashArray = Array.from(new Uint8Array(res)); // 将 ArrayBuffer 转换为 Uint8Array
-          const hashBase64 = btoa(
-            hashArray.reduce(
-              (data, byte) => data + String.fromCharCode(byte),
-              "",
-            ),
-          ).replace(/\/|\\/g, ""); // 将 Uint8Array 转换为 Base64 字符串
-          console.log("File hash: ", hashBase64);
-          try {
-            const res = await fetch(
-              "http://127.0.0.1:8888/api/isFileExist?filename=" +
-                hashBase64 +
-                file.name.slice(file.name.lastIndexOf(".")),
-            );
-            if (!res.ok) {
-              throw new Error(`HTTP error! status: ${res.status}`);
-            }
-            const { data } = await res.json();
-            if (data) {
-              console.log("file exist");
-            } else {
-              uploadChunks(file, hashBase64);
-            }
-          } catch (err) {
-            console.log(err);
-          }
-        });
-    };
+  const isFileExist = (file: File) => {
+    const fileType = file.name.slice(file.name.lastIndexOf("."));
+    getFileId(file, async (fileId: string) => {
+      try {
+        const { data } = await fetcher(
+          "http://127.0.0.1:8888/api/isFileExist?filename=" + fileId + fileType,
+        );
+        if (data) {
+          console.log("file exist");
+        } else {
+          uploadChunks(file, fileId);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    });
   };
 
   const uploadChunks = async (file: File, filename: string) => {
@@ -101,10 +84,23 @@ const Index = () => {
 
   const recoverUpload = () => {};
 
+  const sliceToLocalStorage = (file: File) => {
+    sliceFileToLocalStorage(file, (fileId: string, chunks: number) => {
+      for (let i = 0; i < chunks; i++) {
+        const t = localStorage.getItem(fileId + "-chunk-" + i);
+        const item = JSON.parse(t);
+        console.log(item);
+      }
+    });
+  };
+
   return (
     <>
       <Upload beforeUpload={isFileExist} showUploadList={false}>
         <Button type="primary">大文件分片</Button>
+      </Upload>
+      <Upload beforeUpload={sliceToLocalStorage} showUploadList={false}>
+        <Button type="primary">sliceToLocalStorage</Button>
       </Upload>
       <Button onClick={pauseUpload}>暂停</Button>
       <Button onClick={recoverUpload}>恢复</Button>
