@@ -2,6 +2,10 @@ import { Button, Upload, Progress } from "antd";
 import { useState } from "react";
 import { getFileId, sliceFileToLocalStorage } from "@/utils/helper";
 import fetcher from "@/utils/fetcher";
+import IndexedDBService from "@/utils/indexedDBTool";
+import { clientHookInServerComponentError } from "next/dist/client/components/client-hook-in-server-component-error";
+import IndexedDBTool from "@/utils/indexedDBTool";
+import IndexedDBSingle from "@/utils/indexedDBSingle";
 
 const Index = () => {
   const [percent, setPercent] = useState(0);
@@ -82,15 +86,53 @@ const Index = () => {
     acObj && acObj.abort();
   };
 
-  const recoverUpload = () => {};
+  const recoverUpload = () => {
+    const dbConfig = {
+      version: "1",
+      storeName: "user",
+      keyPath: "userId",
+    };
+    IndexedDBService.addItem(dbConfig, {
+      userId: Date.now() + "",
+      name: "bon",
+      age: 12,
+    }).then(() => {
+      console.log("added");
+      IndexedDBService.getItem(dbConfig, "1").then((res) => {
+        console.log(res);
+        IndexedDBService.updateItem(dbConfig, {
+          userId: "1",
+          name: "booooooon",
+          age: 112,
+        }).then((res) => {
+          console.log("updated", res);
+          IndexedDBService.deleteItem(dbConfig, "1").then((res) =>
+            console.log("deleted", res),
+          );
+        });
+      });
+    });
+  };
 
   const sliceToLocalStorage = (file: File) => {
     sliceFileToLocalStorage(file, (fileId: string, chunks: number) => {
-      for (let i = 0; i < chunks; i++) {
-        const t = localStorage.getItem(fileId + "-chunk-" + i);
-        const item = JSON.parse(t);
-        console.log(item, "=-=", item.data ? item.data : "");
-      }
+      // for (let i = 0; i < chunks; i++) {
+      //   // const t = localStorage.getItem(fileId + "-chunk-" + i);
+      //   // const item = JSON.parse(t);
+      //   // console.log(item, "=-=", item.data ? item.data : "");
+      //   IndexedDBService.getItem(
+      //     {
+      //       version: "1",
+      //       storeName: fileId,
+      //       keyPath: "fileChunkName",
+      //     },
+      //     fileId + "-chunk-" + i,
+      //   ).then((res) => {
+      //     console.log("getFromIndexedDB", res);
+      //     const blob = new Blob([res.data], { type: "text/plain" });
+      //     console.log({ fileChunkName: res.fileChunkName, data: blob });
+      //   });
+      // }
     });
   };
 
