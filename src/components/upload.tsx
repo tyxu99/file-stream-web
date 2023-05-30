@@ -89,7 +89,7 @@ const Index = () => {
       for (let i = 0; i < chunks; i++) {
         const t = localStorage.getItem(fileId + "-chunk-" + i);
         const item = JSON.parse(t);
-        console.log(item);
+        console.log(item, "=-=", item.data ? item.data : "");
       }
     });
   };

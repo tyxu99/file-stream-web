@@ -1,3 +1,4 @@
+// @ts-ignore
 import md5 from "md5";
 
 let count = 0;
@@ -61,9 +62,24 @@ export const getFileId = (file: File, cb: Function) => {
   fr.onabort = () => cb && cb("read abort");
 };
 
+const blobToString = (blob: Blob) =>
+  new Promise((resolve, reject) => {
+    const fr = new FileReader();
+
+    fr.onload = () => {
+      resolve(fr.result);
+    };
+
+    fr.onerror = (error) => {
+      reject(error);
+    };
+
+    fr.readAsText(blob);
+  });
+
 export const sliceFileToLocalStorage = (file: File, cb: Function) => {
-  getFileId(file, (fileId: string) => {
-    const chunkSize = 1024 * 1024 * 3;
+  getFileId(file, async (fileId: string) => {
+    const chunkSize = 1024 * 1024 * 1;
     const fileSize = file.size;
     const chunks = Math.ceil(fileSize / chunkSize);
     let start = 0,
@@ -73,9 +89,10 @@ export const sliceFileToLocalStorage = (file: File, cb: Function) => {
       const fileItem = {
         index: chunkIndex,
         total: chunks,
-        data: chunkItem,
+        data: await blobToString(chunkItem),
         name: fileId,
       };
+      console.log(fileItem);
       localStorage.setItem(
         fileId + "-chunk-" + chunkIndex,
         JSON.stringify(fileItem),
@@ -87,4 +104,59 @@ export const sliceFileToLocalStorage = (file: File, cb: Function) => {
       cb(fileId, chunks);
     }
   });
+};
+
+const operateIndexedDB = (dbName: string, storeName: string) => {
+  if (window && window.indexedDB) {
+    let db;
+    const request = window.indexedDB.open(dbName, 1);
+    request.onerror = (ev) => {
+      console.log("can not open db", ev);
+    };
+
+    request.onupgradeneeded = (event: any) => {
+      db = event.target.result;
+      if (!db.objectStoreNames.contains(storeName)) {
+        const store = db.createObjectStore(storeName, { keyPath: "id" });
+        store.createIndex("name", "name", { unique: false });
+      }
+    };
+
+    request.onsuccess = (event: any) => {
+      db = event.target.result;
+      const data = [
+        { id: 1, name: "apple" },
+        { id: 2, name: "orange" },
+      ];
+      const store = db
+        .transaction(storeName, "readwrite")
+        .objectStore(storeName);
+      data.forEach((item) => store.put(item));
+
+      const getRequest = store.get(1);
+      getRequest.onerror = (err: Error) => {
+        console.log("query failed", err);
+      };
+      getRequest.onsuccess = (event: any) => {
+        console.log(event.target.result);
+      };
+
+      const updateData = { id: 1, name: "apple" };
+      const updateRequest = store.put(updateData);
+      updateRequest.onerror = (err: Error) => {
+        console.log("update failed", err);
+      };
+      updateRequest.onsuccess = (event: any) => {
+        console.log("update success", event);
+      };
+
+      const deleteRequest = store.delete(2);
+      deleteRequest.onerror = (err: Error) => {
+        console.log("delete failed");
+      };
+      deleteRequest.onsuccess = (event: any) => {
+        console.log("deleted success", event);
+      };
+    };
+  }
 };
