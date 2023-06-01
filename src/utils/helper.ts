@@ -78,7 +78,21 @@ const blobToString = (blob: Blob) =>
     fr.readAsText(blob);
   });
 
-const stringToBlob = (str: string) => {};
+const stringToBlob = (str: string) => new Blob([str], { type: "text/plain" });
+
+export const mergeBlobToOne = (blobArr: Blob[], filename: string) => {
+  // 将所有blob合并为单个blob
+  let mergedBlob = new Blob(blobArr, { type: "application/octet-stream" });
+
+  // 创建包含Blob的URL
+  let url = URL.createObjectURL(mergedBlob);
+
+  // 创建下载链接
+  let link = document.createElement("a");
+  link.href = url;
+  link.download = filename; // 下载的文件名
+  link.click();
+};
 
 export const sliceFileToLocalStorage = (file: File, cb: Function) => {
   getFileId(file, async (fileId: string) => {
@@ -93,25 +107,37 @@ export const sliceFileToLocalStorage = (file: File, cb: Function) => {
     let start = 0,
       chunkIndex = 0;
     const pArr = [];
-    while (chunkIndex < chunks) {
-      const chunkItem = file.slice(start, start + chunkSize);
-      // const fileItem = {
-      //   index: chunkIndex,
-      //   total: chunks,
-      //   data: await blobToString(chunkItem),
-      //   name: fileId,
-      // };
-      // console.log(fileItem);
-      // storage size limit 10M about try indexedDB
-      // localStorage.setItem(
-      //   fileId + "-chunk-" + chunkIndex,
-      //   JSON.stringify(fileItem),
-      // );
+    // while (chunkIndex < chunks) {
+    //   const chunkItem = file.slice(start, start + chunkSize);
+    // const fileItem = {
+    //   index: chunkIndex,
+    //   total: chunks,
+    //   data: await blobToString(chunkItem),
+    //   name: fileId,
+    // };
+    // console.log(fileItem);
+    // storage size limit 10M about try indexedDB
+    // localStorage.setItem(
+    //   fileId + "-chunk-" + chunkIndex,
+    //   JSON.stringify(fileItem),
+    // );
 
+    //   pArr.push(
+    //     IndexedDBService.addItem(dbConfig, {
+    //       fileChunkName: fileId + "-chunk-" + chunkIndex,
+    //       data: await blobToString(chunkItem),
+    //     }),
+    //   );
+    // }
+
+    for (let i = 0; i < chunks; i++) {
+      const chunkItem = file.slice(start, start + chunkSize);
+      start += chunkSize;
       pArr.push(
         IndexedDBService.addItem(dbConfig, {
-          fileChunkName: fileId + "-chunk-" + chunkIndex,
-          data: await blobToString(chunkItem),
+          fileChunkName: fileId + "-chunk-" + i,
+          // data: await blobToString(chunkItem),
+          data: chunkItem,
         }),
       );
     }
@@ -120,8 +146,5 @@ export const sliceFileToLocalStorage = (file: File, cb: Function) => {
       console.log("promiseAll", res);
       cb && cb(fileId, chunks);
     });
-    // if (chunkIndex === chunks && cb) {
-    //   cb(fileId, chunks);
-    // }
   });
 };

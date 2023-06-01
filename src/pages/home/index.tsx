@@ -1,4 +1,5 @@
-import { Button, Upload } from "antd";
+import GenerateFileId from "@/components/generateFileId";
+import Upload from "@/components/upload";
 
 const Home = () => {
   const onFileChange = (file: any) => {
@@ -6,9 +7,10 @@ const Home = () => {
   };
 
   return (
-    <Upload showUploadList={false} onChange={onFileChange}>
-      <Button type="primary">选择文件</Button>
-    </Upload>
+    <>
+      <GenerateFileId />
+      <Upload />
+    </>
   );
 };
 

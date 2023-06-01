@@ -43,7 +43,7 @@ class IndexedDBService {
   }
 
   // 添加数据
-  static async addItem<T>(dbConfig: DBConfig, item: T): Promise<void> {
+  static async addItem<T>(dbConfig: DBConfig, item: T): Promise<string> {
     const { version, storeName, keyPath } = dbConfig;
     const db = await new IndexedDBService(
       version,
@@ -60,7 +60,7 @@ class IndexedDBService {
       };
 
       request.onsuccess = () => {
-        resolve();
+        resolve("added");
       };
     });
   }

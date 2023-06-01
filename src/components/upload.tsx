@@ -1,11 +1,12 @@
 import { Button, Upload, Progress } from "antd";
 import { useState } from "react";
-import { getFileId, sliceFileToLocalStorage } from "@/utils/helper";
+import {
+  getFileId,
+  mergeBlobToOne,
+  sliceFileToLocalStorage,
+} from "@/utils/helper";
 import fetcher from "@/utils/fetcher";
 import IndexedDBService from "@/utils/indexedDBTool";
-import { clientHookInServerComponentError } from "next/dist/client/components/client-hook-in-server-component-error";
-import IndexedDBTool from "@/utils/indexedDBTool";
-import IndexedDBSingle from "@/utils/indexedDBSingle";
 
 const Index = () => {
   const [percent, setPercent] = useState(0);
@@ -116,23 +117,33 @@ const Index = () => {
 
   const sliceToLocalStorage = (file: File) => {
     sliceFileToLocalStorage(file, (fileId: string, chunks: number) => {
-      // for (let i = 0; i < chunks; i++) {
-      //   // const t = localStorage.getItem(fileId + "-chunk-" + i);
-      //   // const item = JSON.parse(t);
-      //   // console.log(item, "=-=", item.data ? item.data : "");
-      //   IndexedDBService.getItem(
-      //     {
-      //       version: "1",
-      //       storeName: fileId,
-      //       keyPath: "fileChunkName",
-      //     },
-      //     fileId + "-chunk-" + i,
-      //   ).then((res) => {
-      //     console.log("getFromIndexedDB", res);
-      //     const blob = new Blob([res.data], { type: "text/plain" });
-      //     console.log({ fileChunkName: res.fileChunkName, data: blob });
-      //   });
-      // }
+      const resArr = [];
+
+      for (let i = 0; i < chunks; i++) {
+        resArr.push(
+          IndexedDBService.getItem(
+            {
+              version: "1",
+              storeName: fileId,
+              keyPath: "fileChunkName",
+            },
+            fileId + "-chunk-" + i,
+          ),
+        );
+      }
+      Promise.all(resArr).then((res) => {
+        const sorted = res.sort(
+          (a: any, b: any) =>
+            parseInt(a.fileChunkName.split("-")[2]) -
+            parseInt(b.fileChunkName.split("-")[2]),
+        );
+        console.log("resArr====", sorted);
+        const blobArr: Blob[] = sorted.map(
+          // ({ data }) => new Blob([data], { type: "text/plain" }),
+          (d: any) => d.data,
+        );
+        mergeBlobToOne(blobArr, fileId + ".png");
+      });
     });
   };
 
