@@ -147,6 +147,23 @@ const Index = () => {
     });
   };
 
+  const downloadFile = async () => {
+    // filename 1685954304236bLHo15gsZrbio7FoieR9zHw3vgYT0d1K5ZkffXOPFLo=.png
+
+    try {
+      const res = await fetch(
+        "http://127.0.0.1:8888/api/fileStream/1685954304236bLHo15gsZrbio7FoieR9zHw3vgYT0d1K5ZkffXOPFLo=.png",
+      );
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const data = await res.json();
+      console.log("data", data);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
   return (
     <>
       <Upload beforeUpload={isFileExist} showUploadList={false}>
@@ -158,6 +175,7 @@ const Index = () => {
       <Button onClick={pauseUpload}>暂停</Button>
       <Button onClick={recoverUpload}>恢复</Button>
       <Progress status="active" percent={percent} />
+      <Button onClick={downloadFile}>下载文件</Button>
     </>
   );
 };
