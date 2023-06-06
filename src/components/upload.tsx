@@ -153,6 +153,11 @@ const Index = () => {
     try {
       const res = await fetch(
         "http://127.0.0.1:8888/api/fileStream/1685954304236bLHo15gsZrbio7FoieR9zHw3vgYT0d1K5ZkffXOPFLo=.png",
+        {
+          headers: {
+            "Response-Type": "blob",
+          },
+        },
       );
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
