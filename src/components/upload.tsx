@@ -148,11 +148,12 @@ const Index = () => {
   };
 
   const downloadFile = async () => {
-    // filename 1685954304236bLHo15gsZrbio7FoieR9zHw3vgYT0d1K5ZkffXOPFLo=.png
+    const filename: string =
+      "1685954304236bLHo15gsZrbio7FoieR9zHw3vgYT0d1K5ZkffXOPFLo=.png";
 
     try {
       const res = await fetch(
-        "http://127.0.0.1:8888/api/fileStream/1685954304236bLHo15gsZrbio7FoieR9zHw3vgYT0d1K5ZkffXOPFLo=.png",
+        "http://127.0.0.1:8888/api/fileStream/" + filename,
         {
           headers: {
             "Response-Type": "blob",
@@ -162,8 +163,13 @@ const Index = () => {
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
-      const data = await res.json();
-      console.log("data", data);
+      // console.log(res.headers.get("Content-Dispostion"));
+      const data = await res.blob();
+      const el = document.createElement("a");
+      el.href = URL.createObjectURL(data);
+      el.download = filename;
+      el.click();
+      URL.revokeObjectURL(el.href);
     } catch (error) {
       console.log("error", error);
     }

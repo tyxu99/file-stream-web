@@ -148,3 +148,14 @@ export const sliceFileToLocalStorage = (file: File, cb: Function) => {
     });
   });
 };
+
+export const downloadFileFromUrl = async (url: string, fileName: string) => {
+  const response = await fetch(url);
+  const blob = await response.blob();
+
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = fileName;
+  link.click();
+  URL.revokeObjectURL(link.href);
+};
