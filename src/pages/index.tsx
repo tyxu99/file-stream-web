@@ -7,8 +7,9 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Index() {
   return (
     <>
-      <GenerateFileId />
-      <UploadFile />
+      {/*<GenerateFileId />*/}
+      {/*<UploadFile />*/}
+      hello
     </>
   );
 }

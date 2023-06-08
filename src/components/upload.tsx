@@ -7,10 +7,25 @@ import {
 } from "@/utils/helper";
 import fetcher from "@/utils/fetcher";
 import IndexedDBService from "@/utils/indexedDBTool";
-
 const Index = () => {
   const [percent, setPercent] = useState(0);
   const [acObj, setAcObj] = useState<any>(null);
+
+  const [fileList, setFileList] = useState<
+    { fileName: string; fileType: string; fileSize: number }[]
+  >([]);
+
+  const getFileList = async () => {
+    try {
+      const res = await fetcher("/fileList");
+      console.log(res);
+      if (res && res.data && Array.isArray(res.data) && res.data.length > 0) {
+        setFileList(res.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const isFileExist = (file: File) => {
     const fileType = file.name.slice(file.name.lastIndexOf("."));
@@ -31,7 +46,7 @@ const Index = () => {
   };
 
   const uploadChunks = async (file: File, filename: string) => {
-    const CHUNK_SIZE = 1024 * 1024 * 4;
+    const CHUNK_SIZE = 1024 * 1024 * 5;
     const fileSize = file.size;
 
     const chunks = Math.ceil(fileSize / CHUNK_SIZE);
@@ -147,13 +162,10 @@ const Index = () => {
     });
   };
 
-  const downloadFile = async () => {
-    const filename: string =
-      "1685954304236bLHo15gsZrbio7FoieR9zHw3vgYT0d1K5ZkffXOPFLo=.png";
-
+  const downloadFile = async (filename: string) => {
     try {
       const res = await fetch(
-        "http://127.0.0.1:8888/api/fileStream/" + filename,
+        "http://127.0.0.1:8888/api/fileStream/normalDown/" + filename,
         {
           headers: {
             "Response-Type": "blob",
@@ -175,18 +187,70 @@ const Index = () => {
     }
   };
 
+  const sliceDownload = (d: any) => {
+    const { fileName, fileSize } = d;
+    const chunkSize = 1024 * 1024 * 10;
+    const chunkNum = Math.ceil(fileSize / chunkSize);
+    let start = 0;
+    getSlicedBlob(fileName, fileSize, { start: 0, end: start + chunkSize });
+  };
+
+  const getSlicedBlob = async (
+    filename: string,
+    fileSize: number,
+    range: { start: number; end: number },
+  ) => {
+    try {
+      const res = await fetch(
+        "http://127.0.0.1:8888/api/fileStream/sliceDown/" + filename,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ range }),
+        },
+      );
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      const data = await res.blob();
+      console.log(data);
+      if (fileSize > range.end) {
+        const chunkSize = 10 * 1024 * 1024;
+        getSlicedBlob(filename, fileSize, {
+          start: range.start + chunkSize,
+          end: range.end + chunkSize,
+        });
+      } else {
+        console.log("to merge");
+      }
+    } catch (err) {}
+  };
+
   return (
     <>
       <Upload beforeUpload={isFileExist} showUploadList={false}>
-        <Button type="primary">大文件分片</Button>
+        <Button type="primary">大文件分片{percent}</Button>
       </Upload>
       <Upload beforeUpload={sliceToLocalStorage} showUploadList={false}>
         <Button type="primary">sliceToLocalStorage</Button>
       </Upload>
+      <Button onClick={getFileList}>文件列表</Button>
       <Button onClick={pauseUpload}>暂停</Button>
       <Button onClick={recoverUpload}>恢复</Button>
-      <Progress status="active" percent={percent} />
-      <Button onClick={downloadFile}>下载文件</Button>
+      <div>文件列表</div>
+      {fileList.length === 0
+        ? "empty"
+        : fileList.map((d, i) => (
+            <div key={i}>
+              {d.fileName}
+              <Button onClick={() => downloadFile(d.fileName)}></Button>
+              <Button onClick={() => sliceDownload(d)}>
+                切片下载=-={d.fileSize}B
+              </Button>
+            </div>
+          ))}
     </>
   );
 };

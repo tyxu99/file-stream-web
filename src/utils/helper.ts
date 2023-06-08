@@ -159,3 +159,55 @@ export const downloadFileFromUrl = async (url: string, fileName: string) => {
   link.click();
   URL.revokeObjectURL(link.href);
 };
+
+const sliceFileDownload = () => {
+  let sliceUrlList: any[] = []; // 切片图片 URL 数组
+  let index = 0; // 当前切片图片的索引
+
+  // 1. 请求下载切片图片
+  fetch("/download/slice-image")
+    .then((response) => {
+      const reader = response!.body!.getReader();
+      return new ReadableStream({
+        async start(controller) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) {
+              controller.close();
+              break;
+            }
+            controller.enqueue(value);
+          }
+        },
+      });
+    })
+    .then((stream) => new Response(stream))
+    .then((response) => response.blob())
+    .then((imageBlob) => {
+      // 2. 切分 blob 数据，并把每段数据的 URL 存放到 sliceUrlList 数组中
+      let chunkSize = 1024 * 1024; // 切片大小为 1 MB
+      let startByte = 0;
+      let totalBytes = imageBlob.size;
+      while (startByte < totalBytes) {
+        let endByte = startByte + chunkSize;
+        let slice = imageBlob.slice(startByte, endByte);
+        let blobUrl = URL.createObjectURL(slice);
+        sliceUrlList.push(blobUrl);
+        startByte = endByte;
+      }
+      // 3. 开始更新图片
+      loadNextSlice();
+    });
+
+  function loadNextSlice() {
+    let img = new Image();
+    img.src = sliceUrlList[index];
+    img.onload = () => {
+      document.body.appendChild(img);
+      if (index < sliceUrlList.length - 1) {
+        index++;
+        loadNextSlice();
+      }
+    };
+  }
+};
