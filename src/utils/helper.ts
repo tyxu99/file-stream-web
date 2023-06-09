@@ -160,6 +160,15 @@ export const downloadFileFromUrl = async (url: string, fileName: string) => {
   URL.revokeObjectURL(link.href);
 };
 
+export const downloadBlob = (blob: Blob, filename: string) => {
+  const a = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 const sliceFileDownload = () => {
   let sliceUrlList: any[] = []; // 切片图片 URL 数组
   let index = 0; // 当前切片图片的索引

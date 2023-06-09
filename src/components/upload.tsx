@@ -1,6 +1,7 @@
 import { Button, Upload, Progress } from "antd";
 import { useState } from "react";
 import {
+  downloadBlob,
   getFileId,
   mergeBlobToOne,
   sliceFileToLocalStorage,
@@ -14,6 +15,12 @@ const Index = () => {
   const [fileList, setFileList] = useState<
     { fileName: string; fileType: string; fileSize: number }[]
   >([]);
+
+  const genDBConfig = (storeName: string, keyPath: string) => ({
+    version: "1",
+    storeName,
+    keyPath,
+  });
 
   const getFileList = async () => {
     try {
@@ -215,15 +222,48 @@ const Index = () => {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
       const data = await res.blob();
-      console.log(data);
+
+      const chunkSize = 10 * 1024 * 1024;
+      const current = Math.floor(range.start / chunkSize);
+      const dbConfig = genDBConfig("file", "fileChunkName");
+
+      IndexedDBService.addItem(dbConfig, {
+        fileChunkName: `${filename}-chunk-${current}`,
+        data,
+      });
       if (fileSize > range.end) {
-        const chunkSize = 10 * 1024 * 1024;
         getSlicedBlob(filename, fileSize, {
           start: range.start + chunkSize,
-          end: range.end + chunkSize,
+          end:
+            range.end + chunkSize > fileSize ? fileSize : range.end + chunkSize,
         });
       } else {
         console.log("to merge");
+        const pArr = [];
+        for (let i = 0; i < Math.ceil(fileSize / chunkSize); i++) {
+          pArr.push(
+            IndexedDBService.getItem(dbConfig, `${filename}-chunk-${i}`),
+          );
+        }
+        Promise.all(pArr).then((res: any) => {
+          console.log(res);
+
+          // const lastIndex = res.length - 1;
+          // let lastChunk = res[lastIndex].data;
+          // if (lastChunk.byteLength < chunkSize) {
+          //   const newLast = new Uint8Array(chunkSize);
+          //   const lastUint8Array = new Uint8Array(lastChunk);
+          //   newLast.set(lastUint8Array);
+          //   res[lastIndex].data = newLast.buffer;
+          //   lastChunk = newLast.buffer;
+          // }
+
+          const blob = new Blob(
+            res.map((d: any) => d.data),
+            { type: "application/octet-stream" },
+          );
+          downloadBlob(blob, filename);
+        });
       }
     } catch (err) {}
   };
@@ -245,7 +285,7 @@ const Index = () => {
         : fileList.map((d, i) => (
             <div key={i}>
               {d.fileName}
-              <Button onClick={() => downloadFile(d.fileName)}></Button>
+              <Button onClick={() => downloadFile(d.fileName)}>下载</Button>
               <Button onClick={() => sliceDownload(d)}>
                 切片下载=-={d.fileSize}B
               </Button>
