@@ -1,4 +1,4 @@
-import { Button, Upload, Progress } from "antd";
+import { Button, Upload } from "antd";
 import { useState } from "react";
 import {
   downloadBlob,
@@ -268,6 +268,19 @@ const Index = () => {
     } catch (err) {}
   };
 
+  const [streamStr, setStreamStr] = useState("");
+  const streamOut = () => {
+    const eventSource = new EventSource(
+      "http://127.0.0.1:8888/api/fileStream/output",
+    );
+
+    eventSource.addEventListener("message", function (event) {
+      console.log(event);
+      // const data = JSON.parse(event.data);
+      setStreamStr((c) => c + event.data.replace(/\\n/g, "\n"));
+    });
+  };
+
   return (
     <>
       <Upload beforeUpload={isFileExist} showUploadList={false}>
@@ -291,6 +304,11 @@ const Index = () => {
               </Button>
             </div>
           ))}
+
+      <div>
+        <Button onClick={streamOut}>streamOutput</Button>
+      </div>
+      <div>{streamStr}</div>
     </>
   );
 };
