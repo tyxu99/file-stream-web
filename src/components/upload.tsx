@@ -24,8 +24,7 @@ const Index = () => {
 
   const getFileList = async () => {
     try {
-      const res = await fetcher("/fileList");
-      console.log(res);
+      const res = await fetcher("/file/fileList");
       if (res && res.data && Array.isArray(res.data) && res.data.length > 0) {
         setFileList(res.data);
       }
@@ -39,7 +38,9 @@ const Index = () => {
     getFileId(file, async (fileId: string) => {
       try {
         const { data } = await fetcher(
-          "http://127.0.0.1:8888/api/isFileExist?filename=" + fileId + fileType,
+          "http://127.0.0.1:8888/api/file/isFileExist?filename=" +
+            fileId +
+            fileType,
         );
         if (data) {
           console.log("file exist");
@@ -69,11 +70,14 @@ const Index = () => {
       setAcObj(ac);
 
       try {
-        const res = await fetch("http://127.0.0.1:8888/api/uploadHugeFile", {
-          method: "POST",
-          body: formData,
-          signal: ac.signal,
-        });
+        const res = await fetch(
+          "http://127.0.0.1:8888/api/file/uploadHugeFile",
+          {
+            method: "POST",
+            body: formData,
+            signal: ac.signal,
+          },
+        );
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
@@ -93,7 +97,7 @@ const Index = () => {
   const mergeChunks = async (filename: string) => {
     try {
       const res = await fetch(
-        "http://127.0.0.1:8888/api/mergeFileChunks?filename=" + filename,
+        "http://127.0.0.1:8888/api/file/mergeFileChunks?filename=" + filename,
       );
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
@@ -172,7 +176,7 @@ const Index = () => {
   const downloadFile = async (filename: string) => {
     try {
       const res = await fetch(
-        "http://127.0.0.1:8888/api/fileStream/normalDown/" + filename,
+        "http://127.0.0.1:8888/api/file/fileStream/normalDown/" + filename,
         {
           headers: {
             "Response-Type": "blob",
@@ -192,6 +196,63 @@ const Index = () => {
     } catch (error) {
       console.log("error", error);
     }
+  };
+
+  const streamDownload = (filename: string) => {
+    fetch("http://127.0.0.1:8888/api/file/fileStream/normalDown/" + filename)
+      // .then((response) => {
+      //   const reader = response!.body!.getReader();
+      //   return new ReadableStream({
+      //     async start(controller): Promise<void> {
+      //       while (true) {
+      //         const { done, value } = await reader.read();
+      //         console.log(done, value);
+      //         if (done) {
+      //           controller.close();
+      //           break;
+      //         }
+      //         controller.enqueue(value);
+      //       }
+      //     },
+      //   });
+      // })
+      // .then((stream) => new Response(stream))
+      .then((response) => response.blob())
+      .then((imageBlob) => {
+        let url = URL.createObjectURL(imageBlob);
+        let img = new Image(800);
+        img.src = url;
+        document.body.appendChild(img);
+
+        // const imageArrayBuffer = imageBlob; // 获取图像数据
+        // const uint8Array = new Uint8Array(imageArrayBuffer);
+        // const canvas = document.createElement("canvas");
+        // const ctx = canvas.getContext("2d");
+        //
+        // const img = new Image();
+        // img.onload = () => {
+        //   const width = img.width;
+        //   const height = img.height;
+        //   canvas.width = width;
+        //   canvas.height = height;
+        //
+        //   for (let y = 0; y < height; y++) {
+        //     const imageData = ctx.createImageData(width, 1);
+        //     for (let x = 0; x < width; x++) {
+        //       const offset = y * width * 4 + x * 4;
+        //       imageData.data[x * 4] = uint8Array[offset];
+        //       imageData.data[x * 4 + 1] = uint8Array[offset + 1];
+        //       imageData.data[x * 4 + 2] = uint8Array[offset + 2];
+        //       imageData.data[x * 4 + 3] = 255;
+        //     }
+        //     ctx.putImageData(imageData, 0, y);
+        //     document.body.appendChild(canvas); // 将画布添加到页面中
+        //   }
+        // };
+        // img.src = URL.createObjectURL(
+        //   new Blob([uint8Array], { type: "image/png" }),
+        // );
+      });
   };
 
   const sliceDownload = (d: any) => {
@@ -298,7 +359,7 @@ const Index = () => {
         : fileList.map((d, i) => (
             <div key={i}>
               {d.fileName}
-              <Button onClick={() => downloadFile(d.fileName)}>下载</Button>
+              <Button onClick={() => streamDownload(d.fileName)}>下载</Button>
               <Button onClick={() => sliceDownload(d)}>
                 切片下载=-={d.fileSize}B
               </Button>
@@ -309,6 +370,11 @@ const Index = () => {
         <Button onClick={streamOut}>streamOutput</Button>
       </div>
       <div>{streamStr}</div>
+      {/*<img*/}
+      {/*  width={800}*/}
+      {/*  src="http://127.0.0.1:8888/api/fileStream/normalDown/bLHo15gsZrbio7FoieR9zHw3vgYT0d1K5ZkffXOPFLo=.png"*/}
+      {/*  alt=""*/}
+      {/*/>*/}
     </>
   );
 };
