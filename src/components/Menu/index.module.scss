@@ -1,0 +1,32 @@
+.menu {
+  height: 100%;
+  width: 300px;
+  overflow: auto;
+  user-select: none;
+
+  .rootMenu {
+    height: 58px;
+    line-height: 58px;
+    text-indent: 30px;
+    transition: all linear .2s;
+    &:hover {
+      cursor: pointer;
+      background: aquamarine;
+    }
+  }
+
+  .subMenuWrapper {
+    overflow: hidden;
+    transition: all linear .2s;
+  }
+  .subMenu {
+    text-indent: 70px;
+    height: 38px;
+    line-height: 38px;
+    transition: all linear .2s;
+    &:hover {
+      cursor: pointer;
+      background: #a7f3c5;
+    }
+  }
+}
