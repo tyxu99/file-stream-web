@@ -6,7 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 const Index = () => {
   const router = useRouter();
   const pathname = usePathname();
-  console.log(pathname);
+  // console.log(pathname);
   const [current, setCurrent] = useState<string>(pathname);
 
   return (
@@ -34,7 +34,7 @@ const Index = () => {
             {item.name}
           </div>
           <div
-            key={index}
+            key={item.name + item.path}
             className={styles.subMenuWrapper}
             style={{
               height:

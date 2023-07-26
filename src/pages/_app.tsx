@@ -1,6 +1,7 @@
 import React from "react";
 import "../styles/globals.css";
 import Layout from "@/components/Layout";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function App({
   Component,
@@ -9,7 +10,12 @@ export default function App({
   Component: React.FC;
   pageProps: any;
 }) {
-  return (
+  const pathname = usePathname();
+  console.log("_app", pathname);
+
+  return ["/grid"].includes(pathname) ? (
+    <Component {...pageProps} />
+  ) : (
     <Layout>
       <Component {...pageProps} />
     </Layout>

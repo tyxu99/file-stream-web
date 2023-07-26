@@ -110,3 +110,7 @@ a {
   width: 100vw;
   height: 100vh;
 }
+
+.react-grid-item {
+  border: 1px dashed;
+}
