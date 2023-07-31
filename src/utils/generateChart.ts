@@ -1,6 +1,6 @@
 import * as echarts from "echarts";
 
-export const generateChart = (dom: HTMLElement) => {
+export const generateChart = (dom: HTMLElement, type: string) => {
   console.log("generate chart");
   const chart = echarts.init(dom);
 
@@ -17,11 +17,7 @@ export const generateChart = (dom: HTMLElement) => {
     series: [
       {
         data: [150, 200, 140, 120, 300, 177, 222],
-        type: "line",
-      },
-      {
-        data: [150, 200, 140, 120, 300, 177, 222],
-        type: "bar",
+        type,
       },
     ],
     autosize: true,

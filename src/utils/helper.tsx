@@ -232,3 +232,25 @@ const sliceFileDownload = () => {
     };
   }
 };
+import { IBlock } from "@/utils/bezierTwoBlock";
+export const svgLine = (blockData: IBlock[]) => {
+  const sorted = blockData.sort((a, b) => a.x + a.width - b.x);
+
+  const [from, to] = sorted;
+  const x1 = from.x + from.width;
+  const y1 = from.y + from.height / 2;
+  const x2 = to.x;
+  const y2 = to.y + to.height / 2;
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+      <path
+        fill="none"
+        stroke="#000000"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d={`M ${x1} ${y1} L ${x2} ${y2}`}
+      />
+    </svg>
+  );
+};

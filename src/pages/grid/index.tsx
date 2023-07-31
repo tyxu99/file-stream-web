@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import GridLayout, { WidthProvider, Responsive } from "react-grid-layout";
+import GridLayout, { WidthProvider } from "react-grid-layout";
 import styles from "./index.module.scss";
 import CharmAtom from "@/asset/CharmAtom.svg";
 import CharmChartBar from "@/asset/CharmChartBar.svg";
@@ -13,30 +13,38 @@ import Fa6RegularCompass from "@/asset/Fa6RegularCompass.svg";
 import Image from "next/image";
 import "/node_modules/react-grid-layout/css/styles.css";
 import "/node_modules/react-resizable/css/styles.css";
-import ReactGridLayout from "react-grid-layout";
-import { generateChart } from "@/utils/generateChart";
 import GridItem from "@/components/GridItem";
+import fetcher from "@/utils/fetcher";
 
 const ResponsiveReactGridLayout = WidthProvider(GridLayout);
 
 const Index = () => {
   const [layout, setLayout] = useState([
-    { i: "a", x: 0, y: 0, w: 5, h: 5 },
-    { i: "b", x: 0, y: 0, h: 5, w: 5 },
+    { i: "a", x: 0, y: 0, w: 5, h: 5, type: "bar" },
+    { i: "b", x: 0, y: 0, h: 5, w: 5, type: "line" },
   ]);
   const [chartInst, setChartInst] = useState<any>({});
 
   useEffect(() => {
-    // if (document) {
-    //   const el1 = document.getElementById("panel-a");
-    //   const el2 = document.getElementById("panel-b");
-    //   if (el1 && el2) {
-    //     const chart = generateChart(el1);
-    //     setChart(chart);
-    //     // generateChart(el2);
-    //   }
-    // }
+    // getDashboardDetail().then(() => {
+    //   saveDashboardDetail(layout).then(() => {
+    //     getDashboardDetail();
+    //   });
+    // });
   }, []);
+
+  const getDashboardDetail = async () => {
+    const res = await fetcher("/82");
+    console.log("getDashboardDetail", res);
+  };
+
+  const saveDashboardDetail = async (meta: any[]) => {
+    const res = await fetcher("/saveDashboard", {
+      method: "POST",
+      body: JSON.stringify({ meta }),
+    });
+    console.log("saveDashboardDetail", res);
+  };
 
   const onLayoutChange = (layout: any) => {
     console.log("onLayoutChange", layout);
@@ -44,10 +52,16 @@ const Index = () => {
   };
 
   const addChart = (type: number) => {
-    console.log(type === 1 ? "bar" : "line");
     setLayout((c) => [
       ...c,
-      { i: Math.random().toString(), x: 5, y: 0, w: 5, h: 5 },
+      {
+        i: Math.random().toString(),
+        x: 5,
+        y: 0,
+        w: 5,
+        h: 5,
+        type: type % 2 ? "bar" : "line",
+      },
     ]);
   };
 
@@ -66,7 +80,7 @@ const Index = () => {
           Fa6RegularCompass,
         ].map((d, i) => (
           <div key={i}>
-            <Image src={d} alt="" onClick={(d) => addChart(i)} />
+            <Image src={d} alt="" onClick={() => addChart(i)} />
           </div>
         ))}
       </div>

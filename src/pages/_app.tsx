@@ -13,7 +13,7 @@ export default function App({
   const pathname = usePathname();
   console.log("_app", pathname);
 
-  return ["/grid"].includes(pathname) ? (
+  return ["/grid", "/svg-bezier"].includes(pathname) ? (
     <Component {...pageProps} />
   ) : (
     <Layout>

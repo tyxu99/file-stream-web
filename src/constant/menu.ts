@@ -8,9 +8,17 @@ const menu = [
     path: "/grid",
   },
   {
+    name: "svg-bezier",
+    path: "/svg-bezier",
+  },
+  {
     name: "账户管理",
     path: "/user",
     routes: [
+      {
+        path: "/user/bezier",
+        name: "bezier canvas",
+      },
       {
         path: "/user/list",
         name: "账户列表",
