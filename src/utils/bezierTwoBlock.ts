@@ -1,5 +1,7 @@
 export interface IBlock {
   id?: number;
+  pid?: number;
+  dashed?: boolean;
   x: number;
   y: number;
   width: number;

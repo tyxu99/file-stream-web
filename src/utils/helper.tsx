@@ -2,7 +2,6 @@
 import md5 from "md5";
 import IndexedDBService from "@/utils/indexedDBTool";
 
-let count = 0;
 export const generateFileId = async (file: File) => {
   // 每次截取多少二进制
   // let whileMax = Math.floor(
@@ -232,25 +231,58 @@ const sliceFileDownload = () => {
     };
   }
 };
-import { IBlock } from "@/utils/bezierTwoBlock";
-export const svgLine = (blockData: IBlock[]) => {
-  const sorted = blockData.sort((a, b) => a.x + a.width - b.x);
+
+const formPath = (blockArr: IBlock[]) => {
+  const sorted = blockArr.sort((a, b) => a.x + a.width - b.x);
 
   const [from, to] = sorted;
   const x1 = from.x + from.width;
   const y1 = from.y + from.height / 2;
   const x2 = to.x;
   const y2 = to.y + to.height / 2;
+
+  const dashed = from.dashed || to.dashed;
+
+  const props = {
+    key: from.id + "" + to.id,
+    fill: "none",
+    stroke: "#000000",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    strokeDasharray: "1000, 10",
+    strokeWidth: "1",
+    d: `M ${x1} ${y1} L ${x2} ${y2}`,
+  };
+
+  if (dashed) {
+    props.strokeDasharray = "10, 10";
+  }
+
+  // @ts-ignore
+  return <path {...props} />;
+};
+
+import { IBlock } from "@/utils/bezierTwoBlock";
+export const svgLine = (blockData: IBlock[]) => {
+  const pidArr = Array.from(new Set(blockData.map((d) => d.pid))).filter(
+    (d) => d,
+  );
+  const pBlock: any = {};
+  blockData.forEach((d) => {
+    if (pidArr.includes(d.id)) {
+      pBlock[d.id + ""] = d;
+    }
+  });
+  const blockPair: any[] = [];
+  blockData.forEach((d) => {
+    if (d.pid) {
+      blockPair.push([pBlock[d.pid + ""], d]);
+    }
+  });
+
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-      <path
-        fill="none"
-        stroke="#000000"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d={`M ${x1} ${y1} L ${x2} ${y2}`}
-      />
+      {blockPair.map((d) => formPath(d))}
     </svg>
   );
 };

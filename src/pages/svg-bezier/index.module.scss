@@ -3,8 +3,44 @@
   height: 100%;
   background: azure;
   position: relative;
+  display: flex;
 
-  & > div {
-    position: absolute;
+  .confBar {
+    width: 200px;
+    border-right: 1px dashed;
+    .inner {
+      height: 40px;
+      line-height: 40px;
+      padding: 0 10px 0 20px;
+      transition: all linear 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      &:hover {
+        height: 50px;
+        line-height: 50px;
+        background: lightcyan;
+      }
+      & > div:nth-child(2) {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 12px;
+        cursor: move;
+        & > div {
+          width: 20px;
+          height: 2px;
+          background: #eeeeee;
+        }
+      }
+    }
+  }
+
+  .confGraph {
+    width: calc(100% - 200px);
+    position: relative;
+    & > div {
+      position: absolute;
+    }
   }
 }
