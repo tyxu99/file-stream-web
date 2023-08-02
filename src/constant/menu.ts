@@ -12,12 +12,20 @@ const menu = [
     path: "/svg-bezier",
   },
   {
+    name: "DragAndDrop",
+    path: "/DragAndDrop",
+  },
+  {
     name: "账户管理",
     path: "/user",
     routes: [
       {
         path: "/user/bezier",
         name: "bezier canvas",
+      },
+      {
+        path: "/user/DND",
+        name: "drag and drop",
       },
       {
         path: "/user/list",

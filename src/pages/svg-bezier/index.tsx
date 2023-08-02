@@ -1,13 +1,9 @@
 import styles from "./index.module.scss";
 import { svgLine } from "@/utils/helper";
 import { useEffect, useState } from "react";
-import { DndProvider, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import DragItem from "@/components/DNDItem/Drag";
-import DropItem from "@/components/DNDItem/Drop";
 
 const Index = () => {
-  const [data, setData] = useState([
+  const [data, setData] = useState<any>([
     {
       id: 1,
       x: 100,
@@ -85,14 +81,14 @@ const Index = () => {
         (e) => {
           // console.log("mousemove", e.clientX, e.clientY);
           const pointed = data
-            .map((d) => "isPointerIn" + d.id)
-            .find((d) => store[d]);
+            .map((d: any) => "isPointerIn" + d.id)
+            .find((d: any) => store[d]);
           if (!pointed) return;
           const pointedBlock: any = {
-            ...data.find((d) => d.id + "" === pointed.slice(11)),
+            ...data.find((d: any) => d.id + "" === pointed.slice(11)),
           };
           const notPointedBlockArr = data.filter(
-            (d) => d.id + "" !== pointed.slice(11),
+            (d: any) => d.id + "" !== pointed.slice(11),
           );
           // console.log(pointedBlock);
           // console.log(e.clientX - store.clientX, e.clientY - store.clientY);
@@ -110,8 +106,8 @@ const Index = () => {
         "mouseup",
         () => {
           data
-            .map((d) => "isPointerIn" + d.id)
-            .forEach((d) => (store[d] = false));
+            .map((d: any) => "isPointerIn" + d.id)
+            .forEach((d: any) => (store[d] = false));
         },
         { passive: false },
       );
@@ -120,7 +116,7 @@ const Index = () => {
 
   const isCursorInBlock = (x: number, y: number) => {
     // console.log(data);
-    data.forEach((d) => {
+    data.forEach((d: any) => {
       store["isPointerIn" + d.id] = !(
         x < d.x ||
         x > d.x + d.width ||
@@ -136,10 +132,12 @@ const Index = () => {
   const previewDropPosition = () => {
     if (dragEntered) return;
     setDragEntered(true);
-    const pidArr = Array.from(new Set(data.map((d) => d.pid))).filter((d) => d);
-    const noChild = data.filter((d) => !pidArr.includes(d.id));
+    const pidArr = Array.from(new Set(data.map((d: any) => d.pid))).filter(
+      (d) => d,
+    );
+    const noChild = data.filter((d: any) => !pidArr.includes(d.id));
     console.log(noChild);
-    const possiblePosition = noChild.map((d) => ({
+    const possiblePosition: any = noChild.map((d: any) => ({
       ...d,
       id: d.id + "1",
       pid: d.id,
@@ -147,22 +145,26 @@ const Index = () => {
       color: "#eee",
       dashed: true,
     }));
-    setData((c) => [...c, ...possiblePosition]);
+    setData((c: any) => [...c, ...possiblePosition]);
   };
 
-  const calculatePosition = (x, y) => {
+  const calculatePosition = (x: number, y: any) => {
     const dashedArr = data
       .filter((d: any) => d.dashed)
-      .map((d) => ({ id: d.id, x: d.x + d.width / 2, y: d.y + d.height / 2 }));
+      .map((d: any) => ({
+        id: d.id,
+        x: d.x + d.width / 2,
+        y: d.y + d.height / 2,
+      }));
     const pos = dashedArr
-      .map((d) => ({
+      .map((d: any) => ({
         id: d.id,
         value: (d.x - x) ** 2 + (d.y - y) ** 2,
       }))
-      .sort((a, b) => a.value - b.value)[0];
+      .sort((a: any, b: any) => a.value - b.value)[0];
     console.log(pos);
-    const notDashed = data.filter((d) => !d.dashed);
-    const final = data.find((d) => d.id === pos.id);
+    const notDashed = data.filter((d: any) => !d.dashed);
+    const final = data.find((d: any) => d.id === pos.id);
     setDragEntered(false);
     setData([...notDashed, { ...final, dashed: false }]);
   };
@@ -183,7 +185,7 @@ const Index = () => {
             }}
             onDragEnd={() => {
               setDragEntered(false);
-              setData((c) => c.filter((d) => !d.dashed));
+              setData((c: any) => c.filter((d: any) => !d.dashed));
             }}
           >
             <div>{d}</div>

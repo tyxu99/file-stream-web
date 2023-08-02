@@ -1,0 +1,37 @@
+.card-container {
+  width: 40%;
+  border: 1px dashed;
+  padding: 20px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+
+  .card_drop_group {
+    margin-top: 30px;
+    height: 240px;
+    width: 600px;
+    padding: 20px;
+    border: 1px solid black;
+  }
+
+  .card_drag_group {
+    flex: 48;
+    padding: 20px;
+    border: 1px solid black;
+
+    .card_drag {
+      width: 100%;
+      height: 55px;
+      line-height: 50px;
+      text-align: center;
+      border: 1px dashed black;
+      border-radius: 10px;
+      background: lightcyan;
+      cursor: move;
+    }
+
+    .card_drag + .card_drag {
+      margin-top: 20px;
+    }
+  }
+}

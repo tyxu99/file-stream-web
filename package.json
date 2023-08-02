@@ -29,6 +29,7 @@
     "react-dom": "18.2.0",
     "react-grid-layout": "^1.3.4",
     "rxjs": "^7.8.1",
+    "svg-pan-zoom": "^3.6.1",
     "typescript": "5.0.4"
   },
   "devDependencies": {
