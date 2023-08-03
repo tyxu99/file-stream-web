@@ -9,6 +9,7 @@ const Card = ({ text, id, index, changePosition }: any) => {
     accept: "DragDropBox",
     hover: (item: any, monitor) => {
       if (!ref.current) return;
+      console.log("item", item, index);
       let dragIndex = item.index;
       let hoverIndex = index;
       if (dragIndex === hoverIndex) return; // 如果回到自己的坑，那就什么都不做

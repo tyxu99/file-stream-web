@@ -3,6 +3,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import styles from "./index.module.scss";
 import { useState } from "react";
 import CardSort from "@/components/DragSort";
+import NativeDrag from "@/components/NativeDrag";
 
 const DragItem = ({
   id,
@@ -81,26 +82,40 @@ const DropDown = ({ type }: { type: string }) => {
 const DragAndDrop = () => {
   return (
     <>
-      <DndProvider backend={HTML5Backend}>
-        <div className={styles.wrapper}>
-          <div className={styles.dragZone}>
-            {[
-              { title: "a", type: "block" },
-              { title: "b", type: "line" },
-              { title: "c", type: "block" },
-              { title: "d", type: "line" },
-            ].map((d, i) => (
-              <DragItem key={i} id={d.title + i} text={d.title} type={d.type} />
-            ))}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-evenly",
+          flexWrap: "wrap",
+        }}
+      >
+        <DndProvider backend={HTML5Backend}>
+          <div className={styles.wrapper}>
+            <div className={styles.dragZone}>
+              {[
+                { title: "a", type: "block" },
+                { title: "b", type: "line" },
+                { title: "c", type: "block" },
+                { title: "d", type: "line" },
+              ].map((d, i) => (
+                <DragItem
+                  key={i}
+                  id={d.title + i}
+                  text={d.title}
+                  type={d.type}
+                />
+              ))}
+            </div>
+            <div className={styles.dropZone}>
+              {["block", "line"].map((d, i) => (
+                <DropDown key={i} type={d} />
+              ))}
+            </div>
           </div>
-          <div className={styles.dropZone}>
-            {["block", "line"].map((d, i) => (
-              <DropDown key={i} type={d} />
-            ))}
-          </div>
-        </div>
-      </DndProvider>
-      <CardSort />
+        </DndProvider>
+        <CardSort />
+      </div>
+      <NativeDrag />
     </>
   );
 };

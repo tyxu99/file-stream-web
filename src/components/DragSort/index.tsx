@@ -72,6 +72,7 @@ const CardSort = () => {
     // 交换位置
     data[dragIndex] = data[hoverIndex];
     data[hoverIndex] = temp;
+    console.log(data);
     setCardListR(data);
   };
 
@@ -82,25 +83,25 @@ const CardSort = () => {
           {cardList.map((each: any, index: any) => (
             <Card
               changePosition={changePosition}
-              index={"l" + index}
+              index={index}
               id={each.id}
               text={each.text}
               key={"drag_card" + index + each.text}
             />
           ))}
         </div>
-        <div style={{ flex: 4 }}></div>
-        <div className={styles["card_drag_group"]}>
-          {cardListR.map((each: any, index: any) => (
-            <Card
-              changePosition={changePositionR}
-              index={"r" + index}
-              id={each.id}
-              text={each.text}
-              key={"drag_card" + index + each.text}
-            />
-          ))}
-        </div>
+        {/*<div style={{ flex: 4 }}></div>*/}
+        {/*<div className={styles["card_drag_group"]}>*/}
+        {/*  {cardListR.map((each: any, index: any) => (*/}
+        {/*    <Card*/}
+        {/*      changePosition={changePositionR}*/}
+        {/*      index={index}*/}
+        {/*      id={each.id}*/}
+        {/*      text={each.text}*/}
+        {/*      key={"drag_card" + index + each.text}*/}
+        {/*    />*/}
+        {/*  ))}*/}
+        {/*</div>*/}
       </div>
     </DndProvider>
   );

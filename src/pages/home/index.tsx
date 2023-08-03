@@ -1,6 +1,7 @@
 import GenerateFileId from "@/components/generateFileId";
 import Upload from "@/components/upload";
 import { Observable } from "rxjs";
+import NativeDrag from "@/components/NativeDrag";
 
 const Home = () => {
   const onRxObservable = () => {
@@ -36,6 +37,7 @@ const Home = () => {
       <div onClick={onRxObservable}>Observable</div>
       <GenerateFileId />
       <Upload />
+      <NativeDrag />
     </>
   );
 };
