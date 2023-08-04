@@ -30,54 +30,88 @@ const NativeDrag = () => {
     { id: "10", text: "101010" },
   ]);
 
-  const [side, setSide] = useState("left");
+  const [dragFrom, setDragFrom] = useState("left");
   const [draggedId, setDraggedId] = useState("0");
   const [draggedIndex, setDraggedIndex] = useState(-1);
+  const [draggedItem, setDraggedItem] = useState({});
   const [dragOverId, setDragOverId] = useState<any>(null);
 
   const onDragStartHandler = (type: string, i: number, e: any) => {
-    setSide(type);
+    setDragFrom(type);
     setDraggedId(e.target.id);
     setDraggedIndex(i);
+    const t = type === "left" ? left : right;
+    setDraggedItem(t[i]);
   };
 
   const onDragOverHandler = (e: any) => {
     e.preventDefault();
     setDragOverId(e.target.id);
-    if (e.target.id !== dragOverId) {
-      // console.log("draggedId", draggedId, "dragOverId", e.target.id);
-      const leftSideId = left.map((d) => d.id).concat("left-container");
-      const rightSideId = right.map((d) => d.id).concat("right-container");
-      const data = structuredClone(side === "left" ? left : right);
-      if (leftSideId.includes(e.target.id)) {
-        if (e.target.id === "left-container") {
-          const t: any = data.filter((d) => d.id !== draggedId);
-          t.push(data.find((d) => d.id === draggedId));
-          setLeft(t);
-        } else {
-          // TODO
-          const targetItem = data.find((d) => d.id === e.target.id);
-          const targetIndex = data
-            .map((d) => JSON.stringify(d))
-            .indexOf(JSON.stringify(targetItem));
-          const draggedItem = data.find((d) => d.id === draggedId);
-          data[targetIndex] = draggedItem;
-          data[draggedIndex] = targetItem;
-          setLeft(data);
-          console.log(targetIndex, targetItem, draggedItem);
-        }
-      }
-      if (rightSideId.includes(e.target.id)) {
-      }
-    }
   };
 
   const onDropHandler = (e: any) => {
     e.preventDefault();
-    // const left =
+    afterDrop(e.target.id);
+  };
+
+  const afterDrop = (targetId: string) => {
+    const leftIds = left.map((d) => d.id);
+    const rightIds = right.map((d) => d.id);
+    const leftBak: any = structuredClone(left);
+    const rightBak: any = structuredClone(right);
+    if (dragFrom === "left") {
+      if (targetId === "left-container") {
+        leftBak.splice(draggedIndex, 1);
+        leftBak.push(draggedItem);
+        setLeft(leftBak);
+      }
+      if (leftIds.includes(targetId) && draggedId !== targetId) {
+        const targetIndex = leftIds.indexOf(targetId);
+        const [splicedItem] = leftBak.splice(targetIndex, 1, draggedItem);
+        leftBak[draggedIndex] = splicedItem;
+        setLeft(leftBak);
+      }
+      if (targetId === "right-container") {
+        leftBak.splice(draggedIndex, 1);
+        rightBak.push(draggedItem);
+        setLeft(leftBak);
+        setRight(rightBak);
+      }
+      if (rightIds.includes(targetId)) {
+        const targetIndex = rightIds.indexOf(targetId);
+        leftBak.splice(draggedIndex, 1);
+        rightBak.splice(targetIndex, 0, draggedItem);
+        setLeft(leftBak);
+        setRight(rightBak);
+      }
+    } else {
+      if (targetId === "right-container") {
+        rightBak.splice(draggedIndex, 1);
+        rightBak.push(draggedItem);
+        setRight(rightBak);
+      }
+      if (rightIds.includes(targetId) && draggedId !== targetId) {
+        const targetIndex = rightIds.indexOf(targetId);
+        const [splicedItem] = rightBak.splice(targetIndex, 1, draggedItem);
+        rightBak[draggedIndex] = splicedItem;
+        setRight(rightBak);
+      }
+      if (targetId === "left-container") {
+        rightBak.splice(draggedIndex, 1);
+        leftBak.push(draggedItem);
+        setLeft(leftBak);
+        setRight(rightBak);
+      }
+      if (leftIds.includes(targetId)) {
+        const targetIndex = leftIds.indexOf(targetId);
+        rightBak.splice(draggedIndex, 1);
+        leftBak.splice(targetIndex, 0, draggedItem);
+        setLeft(leftBak);
+        setRight(rightBak);
+      }
+    }
     setDraggedId("0");
     setDragOverId(null);
-    console.log("onDropHandler", e.target.id);
   };
 
   return (
@@ -95,7 +129,7 @@ const NativeDrag = () => {
             draggable={true}
             onDragStart={(e) => onDragStartHandler("left", i, e)}
             style={{
-              opacity: draggedId === d.id ? 0.4 : 1,
+              opacity: draggedId === d.id ? 0.2 : 1,
               background: forestGreen[d.id],
             }}
           >
@@ -109,14 +143,14 @@ const NativeDrag = () => {
         onDragOver={onDragOverHandler}
         onDrop={onDropHandler}
       >
-        {right.map((d) => (
+        {right.map((d, i) => (
           <div
             id={d.id}
             key={d.id}
             draggable={true}
-            onDragStart={(e) => onDragStartHandler("right", e)}
+            onDragStart={(e) => onDragStartHandler("right", i, e)}
             style={{
-              opacity: draggedId === d.id ? 0.4 : 1,
+              opacity: draggedId === d.id ? 0.2 : 1,
               background: forestGreen[d.id],
             }}
           >
