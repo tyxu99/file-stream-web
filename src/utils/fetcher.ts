@@ -17,11 +17,10 @@ const fetcher = async (url: string, config: any = null) => {
     (data) => [data, null],
     (err) => [null, err],
   );
-  if (!error) {
-    return await res.json();
-  } else {
-    console.log(error);
-  }
+  if (error || res.status !== 200) return "service error";
+
+  console.log("resssss", res);
+  return await res.json();
 };
 
 export default fetcher;

@@ -26,15 +26,13 @@ const Index = () => {
   const [chartInst, setChartInst] = useState<any>({});
 
   useEffect(() => {
-    // getDashboardDetail().then(() => {
-    //   saveDashboardDetail(layout).then(() => {
-    //     getDashboardDetail();
-    //   });
+    // saveDashboardDetail(layout).then(() => {
+    //   getDashboardDetail();
     // });
   }, []);
 
   const getDashboardDetail = async () => {
-    const res = await fetcher("/82");
+    const res = await fetcher("/");
     console.log("getDashboardDetail", res);
   };
 
@@ -85,7 +83,7 @@ const Index = () => {
         ))}
       </div>
 
-      <div style={{ width: 1920, height: "100%" }}>
+      <div className={styles.dashboard}>
         <ResponsiveReactGridLayout
           className="layout"
           width={1920}
