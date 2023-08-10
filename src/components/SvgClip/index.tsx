@@ -65,6 +65,10 @@ const Index = () => {
         }
       };
     }
+    return () => {
+      document.onmousemove = () => {};
+      document.onmouseup = () => {};
+    };
   }, [isMouseDownSlider, validSuccess]);
 
   const setElLeft = (val: number) => {

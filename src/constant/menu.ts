@@ -16,6 +16,22 @@ const menu = [
     path: "/DragAndDrop",
   },
   {
+    name: "SvgPanZoom",
+    path: "/SvgPanZoom",
+  },
+  {
+    name: "D3",
+    path: "/D3",
+  },
+  {
+    name: "P5",
+    path: "/P5",
+  },
+  {
+    name: "Sigma",
+    path: "/Sigma",
+  },
+  {
     name: "账户管理",
     path: "/user",
     routes: [

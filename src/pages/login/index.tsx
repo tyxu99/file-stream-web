@@ -1,9 +1,8 @@
 import styles from "./index.module.scss";
-import Image from "next/image";
 import { Form, Input, Button } from "antd";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import CaptchaImg from "@/asset/captchaImg.jpeg";
+import fetcher from "@/utils/fetcher";
 
 const Item = Form.Item;
 
@@ -16,6 +15,16 @@ const InputForm = ({
 }) => {
   const [form] = Form.useForm();
   const flag = option === "login";
+
+  const loginOrSignup = async () => {
+    console.log(form.getFieldsValue());
+    const { username, password } = form.getFieldsValue();
+    const res = await fetcher(
+      "/user/login?username=" + username + "&password=" + password,
+    );
+    console.log("login res", res);
+  };
+
   return (
     <div className={styles.inputForm}>
       <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} form={form}>
@@ -34,7 +43,9 @@ const InputForm = ({
           </a>
         </div>
       </Form>
-      <Button type="primary">{flag ? "登录" : "注册"}</Button>
+      <Button type="primary" onClick={loginOrSignup}>
+        {flag ? "登录" : "注册"}
+      </Button>
     </div>
   );
 };

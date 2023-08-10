@@ -1,4 +1,4 @@
-const baseUrl = `http://127.0.0.1:${true ? "8080/dashboard" : "8888/api"}`;
+const baseUrl = `http://127.0.0.1:${true ? "8080" : "8888/api"}`;
 
 const defaults = {
   mode: "cors" as const,

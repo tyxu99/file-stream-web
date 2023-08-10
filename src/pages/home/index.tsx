@@ -1,7 +1,7 @@
 import GenerateFileId from "@/components/generateFileId";
 import Upload from "@/components/upload";
 import { Observable } from "rxjs";
-import NativeDrag from "@/components/NativeDrag";
+// import NativeDrag from "@/components/NativeDrag";
 import SvgClip from "@/components/SvgClip";
 
 const Home = () => {
