@@ -12,6 +12,10 @@ const menu = [
     path: "/svg-bezier",
   },
   {
+    name: "canvas curve",
+    path: "/CanvasCurve",
+  },
+  {
     name: "DragAndDrop",
     path: "/DragAndDrop",
   },
