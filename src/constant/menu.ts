@@ -36,6 +36,20 @@ const menu = [
     path: "/Sigma",
   },
   {
+    name: "地图",
+    path: "/map",
+    routes: [
+      {
+        path: "/map/leaflet",
+        name: "leaflet",
+      },
+      {
+        path: "/map/openlayer",
+        name: "openlayer",
+      },
+    ],
+  },
+  {
     name: "账户管理",
     path: "/user",
     routes: [
