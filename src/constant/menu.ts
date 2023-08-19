@@ -12,6 +12,10 @@ const menu = [
     path: "/svg-bezier",
   },
   {
+    name: "canvas curve",
+    path: "/CanvasCurve",
+  },
+  {
     name: "DragAndDrop",
     path: "/DragAndDrop",
   },
@@ -30,6 +34,20 @@ const menu = [
   {
     name: "Sigma",
     path: "/Sigma",
+  },
+  {
+    name: "地图",
+    path: "/map",
+    routes: [
+      {
+        path: "/map/leaflet",
+        name: "leaflet",
+      },
+      {
+        path: "/map/openlayer",
+        name: "openlayer",
+      },
+    ],
   },
   {
     name: "账户管理",
