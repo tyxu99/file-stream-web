@@ -4,6 +4,29 @@ import TileLayer from "ol/layer/Tile";
 import OSM from "ol/source/OSM";
 import { useEffect, useState } from "react";
 import { Button } from "antd";
+import "./index.module.scss";
+import { Control, defaults as defaultControls } from "ol/control";
+
+class RotateNorthControl extends Control {
+  constructor(opt_options) {
+    const options = opt_options || {};
+    const button = document.createElement("button");
+    button.innerHTML = "N";
+
+    const element = document.createElement("div");
+    element.className = "rotate-north ol-unselectable - ol-control";
+    element.appendChild(button);
+
+    super({
+      element,
+      target: options.target,
+    });
+  }
+
+  handleRotateNorth() {
+    this.getMap().getView().setRotation(0);
+  }
+}
 
 const Index = () => {
   const [mapInst, setMapInst] = useState<any>(null);
@@ -17,9 +40,10 @@ const Index = () => {
           }),
         ],
         view: new View({
-          center: [30.595099, 114.299932],
-          zoom: 10,
+          center: [0, 0],
+          zoom: 1,
         }),
+        // controls: defaultControls().extend([new RotateNorthControl()]),
       });
       setMapInst(map);
     }

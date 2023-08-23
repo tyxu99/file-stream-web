@@ -1,5 +1,12 @@
+import dynamic from "next/dynamic";
+
+const DynamicTemplate = dynamic(() => import("@/components/Template"), {
+  ssr: false,
+  loading: () => <div>Template loading</div>,
+});
+
 const Index = () => {
-  return <div>P5</div>;
+  return <DynamicTemplate />;
 };
 
 export default Index;

@@ -13,6 +13,10 @@ export default function App({
   const pathname = usePathname();
   console.log("_app", pathname);
 
+  if (pathname.includes("h5")) {
+    return <Component {...pageProps} />;
+  }
+
   return ["/grid", "/svg-bezier", "/login"].includes(pathname) ? (
     <Component {...pageProps} />
   ) : (
