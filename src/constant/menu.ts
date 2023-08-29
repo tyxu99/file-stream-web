@@ -8,24 +8,16 @@ const menu = [
     path: "/grid",
   },
   {
-    name: "D3",
-    path: "/D3",
-  },
-  {
-    name: "P5",
-    path: "/P5",
-  },
-  {
-    name: "Sigma",
-    path: "/Sigma",
-  },
-  {
     name: "greedSnake",
     path: "/greedSnake",
   },
   {
     name: "tetris",
     path: "/tetris",
+  },
+  {
+    name: "chat",
+    path: "/chat",
   },
   {
     name: "map",
@@ -45,6 +37,18 @@ const menu = [
     name: "graph",
     path: "/graph",
     routes: [
+      {
+        name: "Sigma",
+        path: "/graph/Sigma",
+      },
+      {
+        name: "D3",
+        path: "/graph/D3",
+      },
+      {
+        name: "P5",
+        path: "/graph/P5",
+      },
       {
         path: "/graph/bezier",
         name: "bezier canvas",

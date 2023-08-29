@@ -12,59 +12,23 @@ const Index = () => {
   return (
     <div className={styles.menu}>
       {MENU.map((item, index) => (
-        <>
+        <div key={item.path}>
           <div
-            key={item.path}
             className={styles.rootMenu}
-            style={{
-              borderLeft: `${
-                current.includes(item.path + "") ? 12 : 0
-              }px solid skyblue`,
-              background: current === item.path ? "#a7f3c5" : "transparent",
-            }}
-            onClick={() => {
-              const path =
-                item.routes && item.routes.length
-                  ? item.routes[0].path
-                  : item.path;
-              setCurrent(path);
-              current !== item.path && router.push(path);
-            }}
+            onClick={() => router.push(item.path)}
           >
             {item.name}
           </div>
-          <div
-            key={item.name + item.path}
-            className={styles.subMenuWrapper}
-            style={{
-              height:
-                item.routes && current.includes(item.path)
-                  ? item.routes.length * 38
-                  : 0,
-              borderLeft: `${
-                current.includes(item.path) ? 12 : 0
-              }px solid skyblue`,
-            }}
-          >
-            {item.routes &&
-              item.routes.length &&
-              item.routes.map((d) => (
-                <div
-                  key={d.path}
-                  className={styles.subMenu}
-                  style={{
-                    background: current === d.path ? "#a7f3c5" : "transparent",
-                  }}
-                  onClick={() => {
-                    setCurrent(d.path);
-                    current !== d.path && router.push(d.path);
-                  }}
-                >
+          {item.routes && item.routes.length && (
+            <div className={styles.subMenuWrapper} key={item.path + index}>
+              {item.routes.map((d) => (
+                <div className={styles.subMenu} key={d.path}>
                   {d.name}
                 </div>
               ))}
-          </div>
-        </>
+            </div>
+          )}
+        </div>
       ))}
     </div>
   );
